@@ -34,31 +34,33 @@ class AccessService{
             })
             if(newShop){
                 // create private key, public key - rsa (thuat toan bat doi xung)
-                const {privateKey,publicKey} = crypt.generateKeyPairSync('rsa',{
-                    modulusLength:4096,
-                    publicKeyEncoding:{
-                        type:'pkcs1',
-                        format:'pem'
-                    },
-                    privateKeyEncoding:{
-                        type:'pkcs1',
-                        format:'pem'
-                    }
-                })
+                // const {privateKey,publicKey} = crypt.generateKeyPairSync('rsa',{
+                //     modulusLength:4096,
+                //     publicKeyEncoding:{
+                //         type:'pkcs1',
+                //         format:'pem'
+                //     },
+                //     privateKeyEncoding:{
+                //         type:'pkcs1',
+                //         format:'pem'
+                //     }
+                // })
                 // Save public key of User
-                const publicKeyString = await KeyTokenService.createPublicKey(newShop._id,publicKey);
-                if(!publicKeyString){
+                const privateKey = crypt.randomBytes(64).toString('hex')
+                const publicKey = crypt.randomBytes(64).toString('hex')
+                const {privateKeyStore,publicKeyStore} = await KeyTokenService.createPublicKey(newShop._id,publicKey,privateKey);
+                console.log(`Private: ${privateKeyStore}, Public: ${publicKeyStore}`)
+                if(!privateKeyStore||!publicKeyStore){
                     return {
                         code: 'xxx',
-                        message:'create public key error !'
+                        message:'create key store error !'
                     }
                 }
-                const publicKeyObject = await crypt.createPublicKey(publicKeyString)
                 // Create token for user 
                 const tokens = await createToken({
                     userId:newShop._id,
                     email:newShop.email
-                },privateKey,publicKeyObject)
+                },privateKeyStore,publicKeyStore)
                 return {
                     code:201,
                     metadata:{
