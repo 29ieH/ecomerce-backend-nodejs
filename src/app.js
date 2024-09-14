@@ -19,5 +19,18 @@ countConnect();
 // Init routes
 app.use('/',require('./routes/index'))
 // Handling Error
-
+app.use((req,res,next) => {
+    const error = new Error('Not Found')
+    error.status = 404
+    next(error)
+})
+app.use((error,req,res,next) => {
+    console.log("Error nhảy vào đây ?.? ")
+    const errorCode = error.status || 500;
+    return res.status(errorCode).json({
+        status:'error',
+        code:errorCode,
+        message:error.message || 'Interval Server'
+    })
+} )
 module.exports = app;
