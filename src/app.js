@@ -14,7 +14,7 @@ app.use(express.urlencoded({
 }))
 // Init db
 require('./dbs/init.mongodbfinal')
-const { countConnect } = require('./helper/check.connect')
+const { countConnect } = require('./helpers/check.connect')
 countConnect();
 // Init routes
 app.use('/',require('./routes/index'))
@@ -32,5 +32,5 @@ app.use((error,req,res,next) => {
         code:errorCode,
         message:error.message || 'Interval Server'
     })
-} )
+})
 module.exports = app;

@@ -16,6 +16,11 @@ class CREATED extends SuccessResponse {
         super({message,statusCode,metaData})
     }
 }
+class OK extends SuccessResponse {
+    constructor({message = ReasonSuccessCode.OK ,statusCode  = SuccessCode.OK ,metaData}){
+        super({message,statusCode,metaData})
+    }
+}
 module.exports = {
-    CREATED
+    CREATED,OK
 }

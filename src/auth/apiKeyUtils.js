@@ -21,13 +21,13 @@ const checkPermission = (permission) => {
     return (req,res,next) => {
         if(!req.keyObj.permissions){
             return res.status(403).json({
-                message:'Permission is dinied'
+                message:'Permission is dinided'
             })
         }
         const validPermission = req.keyObj.permissions.includes(permission);
         if(!validPermission){
             return res.status(403).json({
-                message:'Permission is dinied'
+                message:'Permission is dinided'
             })
         }
         return next();
