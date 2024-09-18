@@ -17,29 +17,20 @@ const RoleShop = {
     ADMIN:'ADMIN'
 }
 class AccessService{
-    static handlerRefreshtoken = async ({refreshToken}) => {
+    static handlerRefreshtoken = async ({user,keyStore,refreshToken}) => {
         /*
         1. Check refreshTiken has used?  
             1.1 Y:: Delete Token -> Require re-login 
             1.2 N:: next
         2. Create new accessToken,refreshToken, update refreshToken in database.  
         */
-       const tokenUsed = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
-       if(tokenUsed){
-        console.log("Token Used:: ",tokenUsed);
-        const {userId,email }= await JWTverify(refreshToken,tokenUsed.privateKey);
-        console.log({userId,email})
+       const {userId,email} = user;
+       if(keyStore.refreshTokenUsed.includes(refreshToken)){
         await KeyTokenService.removeByUserID({userId})
         throw new AuthenFailError('Something wrong happen, pls!!!')
        }
-       const holderContext = await KeyTokenService.findByRefreshToken(refreshToken);
-       console.log("Holder Context:: ",holderContext)
-       if(!holderContext) throw new AuthenFailError('Forbiden Error')
-        const {userId,email} = await JWTverify(refreshToken,holderContext.privateKey);
-        const shopFound = await existEmail({email});
-        if(!shopFound) throw new AuthenFailError('Shop not registed')
-        const tokens = await createToken({userId,email},holderContext.privateKey,holderContext.publicKey);
-        await holderContext.updateOne({
+        const tokens = await createToken({userId,email},keyStore.privateKey,keyStore.publicKey);
+        await keyStore.updateOne({
             $set:{
                 refreshToken:tokens.refreshToken
             },
@@ -47,10 +38,9 @@ class AccessService{
                 refreshTokenUsed:refreshToken
             }
         })
-        const user = {userId,email};
         const keys = {
             accessToken:tokens.accessToken,
-            refreshToken:holderContext.refreshToken
+            refreshToken:keyStore.refreshToken
         }
         return {
             code:200,

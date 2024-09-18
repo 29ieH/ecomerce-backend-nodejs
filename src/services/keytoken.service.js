@@ -22,7 +22,7 @@ class KeyTokenService{
     }
     static findByUserId = async ({user}) => {
         console.log("User:: ",user)
-        const keyStore = await keytokenModel.findOne({user: new Types.ObjectId(user)}).lean();
+        const keyStore = await keytokenModel.findOne({user: new Types.ObjectId(user)});
         return keyStore;
     }
     static removeByID = async ({keyId}) => {
