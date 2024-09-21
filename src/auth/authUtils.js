@@ -85,6 +85,7 @@ const authenticationV2 = asyncHandler(async (req,res,next) => {
             if(!decode) throw new AuthenFailError('Forbiden Error');
             if(!decode.userId===clientId) throw new AuthenFailError('Forbiden Error')
             req.keyStore = keyStore;
+            req.user = decode;
             return next();
         }
         catch(e){
