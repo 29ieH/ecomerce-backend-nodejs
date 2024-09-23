@@ -1,5 +1,7 @@
+const { filter } = require('lodash');
 const { BadRequestError } = require('../../core/error.response');
-const {product} = require('../product.model')
+const {product, product, product} = require('../product.model');
+const { convertToObjectIdMongo } = require('../../utils');
 class ProductRepository{
     static getAllProductDraftsByShop = async ({query,limit,skip}) => {
         return await ProductRepository.getProductQuery({query,limit,skip});
@@ -49,6 +51,56 @@ class ProductRepository{
         .limit(limit)
         .lean();
     }
-
+    static getAllProduct = async({filter,limit,page,sort,select = []}) => {
+        const skip = (page-1)*limit;
+        return await 
+        product.find(filter)
+        .limit(limit)
+        .skip(skip)
+        .select(select)
+        .sort(sort)
+        .lean();
+    }
+    static getProduct = async({filter,limit,page,select = []}) => {
+        const skip = (page-1)*limit;
+        return await 
+        product.findOne(filter)
+        .limit(limit)
+        .skip(skip)
+        .select(select)
+        .lean();
+    }
+    static updateProduct = async({model,productId,bodyUpdate}) => {
+        try{
+            const result =  await model.findByIdAndUpdate(productId,bodyUpdate,{new:true})
+            return result;
+        }catch(e){
+            console.log("Error Update:: ",e)
+        }
+    }
+    static checkProductNotExistByShop = async ({
+        shopId,
+        productIds
+    }) => {
+        let result = [];
+        for(const id of productIds){
+            const product = await product.findOne({
+                _id:convertToObjectIdMongo(id),
+                product_shop:shopId
+            })
+            if(!product) result.push({productId:id,status:'not found'})
+        }
+        return result;
+    }
+    static checkExistingProductByShop = async({
+        shopId,
+        productIds
+    }) => {
+        const products = await product.find({
+            _id:{$in:productIds},
+            product_shop:shopId
+        })
+        return products.length === productIds.length
+    }
 }
 module.exports = ProductRepository

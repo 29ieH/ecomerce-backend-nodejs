@@ -1,6 +1,6 @@
 const {Schema,model} = require('mongoose'); // Erase if already required
 const document = require('../constant/document.const')
-
+const slugify = require('slugify')
 const productSchema = new Schema({
     product_name : {type:String,required:true},
     product_thumb: {type:String,required:true},
@@ -23,6 +23,15 @@ const productSchema = new Schema({
 },{
     collection:document.PRODUCT_COLLECTION
 });
+productSchema.pre('save',function(next){
+    if(this.product_name){
+        this.product_slug = slugify(this.product_name,{
+            lower:true,
+            strict:true
+        });
+    }
+    next();
+})
 productSchema.index({
     "product_name":"text",
     "product_description":"text"

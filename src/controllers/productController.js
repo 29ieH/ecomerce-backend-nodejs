@@ -45,5 +45,27 @@ class ProductController{
             metaData: await ProductService.searchProductByText({keyword})
         }).send(res)
     }
+    static getAllProduct = async (req,res,next) => {
+        new OK({
+            metaData: await ProductService.getAllProduct(req.query)
+        }).send(res)
+    }
+    static getProduct = async (req,res,next) => {
+        const {product_id} = req.params;
+        new OK({
+            metaData: await ProductService.getProduct({product_id,...req.query})
+        }).send(res)
+    }
+    static updateProduct = async(req,res,next) => {
+        const {productId} = req.params;
+        new OK({
+            message:'Update success',
+            metaData: await ProductService.updateProduct({
+                type:req.body.product_type,
+                payload:req.body,
+                productId
+            })
+        }).send(res)
+    }
 }
 module.exports = ProductController;
