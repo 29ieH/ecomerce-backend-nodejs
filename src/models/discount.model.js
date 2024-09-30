@@ -19,7 +19,7 @@ var discountSchema = new Schema({
     discount_shopId:{type:Types.ObjectId,ref:SHOP_DOCUMENT}
 },{
     timestamps:true,
-    collation:DISCOUNT_COLLECTION
+    collection:DISCOUNT_COLLECTION
 });
 //Export the model
 module.exports = model(DISCOUNT_DOCUMENT, discountSchema);

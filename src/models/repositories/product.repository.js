@@ -1,6 +1,6 @@
 const { filter } = require('lodash');
 const { BadRequestError } = require('../../core/error.response');
-const {product, product, product} = require('../product.model');
+const {product} = require('../product.model');
 const { convertToObjectIdMongo } = require('../../utils');
 class ProductRepository{
     static getAllProductDraftsByShop = async ({query,limit,skip}) => {
@@ -84,11 +84,11 @@ class ProductRepository{
     }) => {
         let result = [];
         for(const id of productIds){
-            const product = await product.findOne({
+            const productFound = await product.findOne({
                 _id:convertToObjectIdMongo(id),
                 product_shop:shopId
             })
-            if(!product) result.push({productId:id,status:'not found'})
+            if(!productFound) result.push({productId:id,status:'not found'})
         }
         return result;
     }
@@ -100,6 +100,7 @@ class ProductRepository{
             _id:{$in:productIds},
             product_shop:shopId
         })
+        console.log("Products:: ",products.length === productIds.length)
         return products.length === productIds.length
     }
 }

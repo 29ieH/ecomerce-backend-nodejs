@@ -9,7 +9,8 @@ const document_db = {
     ELECTRONIC_DOCUMENT : 'Electronic' ,
     ELECTRONIC_COLLECTION : 'Electronics',
     DISCOUNT_DOCUMENT : 'Discount',
-    DISCOUNT_COLLECTION: 'Discounts'
+    DISCOUNT_COLLECTION: 'Discounts',
+    CART_DOCUMENT:'Cart',
+    CART_COLLECTION:'Carts'
 }
-
 module.exports = document_db;

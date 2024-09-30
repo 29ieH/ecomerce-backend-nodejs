@@ -30,7 +30,8 @@ app.use((error,req,res,next) => {
     return res.status(errorCode).json({
         status:'error',
         code:errorCode,
-        message:error.message || 'Interval Server'
+        message:error.message || 'Interval Server',
+        payload:error.payload ? error.payload : {}
     })
 })
 module.exports = app;
