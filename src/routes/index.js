@@ -7,6 +7,8 @@ const ver = '/api/v1';
 router.use(validApiKey)
 router.use(checkPermission('0000'))
 router.use(`${ver}/product`,require('./product'))
+router.use(`${ver}/checkout`,require('./checkout'))
+router.use(`${ver}/cart`,require('./cart'))
 router.use(`${ver}/shop`,require('./access'))
 router.use(`${ver}/discount`,require('./discount.js'))
 

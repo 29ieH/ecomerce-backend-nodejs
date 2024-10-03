@@ -51,14 +51,46 @@ class ProductFactory{
             select
         });
     }
-    static getProduct = async ({product_id,limit=50,page=1}) => {
+    static getProduct = async ({product_id}) => {
         const filter = {
             _id:product_id,
             isPublished:true
         }
         const arrayPick = ['__v'];
         const select = unlSelect({arrayPick})
-        return await ProductRepository.getProduct({filter,limit,page,select})
+        return await ProductRepository.getProduct({filter,select})
+    }
+    static getProductOptionsField = async ({product_id,fields}) => {
+        const filter = {
+            _id:product_id,
+            isPublished:true
+        }
+        const select = onGetSelect({arrayPick:fields})
+        return await ProductRepository.getProduct({filter,select})
+    }
+    static getProductSelect = async ({
+        product_id
+    }) => {
+        const filter = {
+            _id:product_id,
+            isPublished:true
+        }
+        const arrayPick = ['product_name','product_price','product_shop']
+        const select = onGetSelect({arrayPick})
+    }
+    static checkProductByServer = async (products) => {
+       return await Promise.all(products.map(async p => {
+            const productFound = await this.getProduct({product_id:p.productId});
+            if(productFound){
+                return {
+                    price:productFound.product_price,
+                    quantity:p.quantity,
+                    productId:p.productId
+                }
+            }else{
+                throw new BadRequestError('Order wrong !!!')
+            }
+        }))
     }
 }
 

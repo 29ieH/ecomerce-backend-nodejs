@@ -9,6 +9,16 @@ var CartSchema = new Schema({
         enums:['active','failed','pending'],
         default:'active'
     },
+
+    /*
+        Product Items
+        {
+            "productId":"zzz",
+            "name":"abc",
+            "quanity":2,
+            "shopId":"abcz"
+        }
+    */
     cartProducts:{
         type:Array,
         default:[],
@@ -19,9 +29,8 @@ var CartSchema = new Schema({
         default:0
     },
     cartUserId:{
-        type:Types.ObjectId,
+        type:String,
         required:true,
-        ref:'User'
     }
 },{
     collection:CART_COLLECTION,

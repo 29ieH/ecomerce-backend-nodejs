@@ -61,12 +61,9 @@ class ProductRepository{
         .sort(sort)
         .lean();
     }
-    static getProduct = async({filter,limit,page,select = []}) => {
-        const skip = (page-1)*limit;
+    static getProduct = async({filter,select = []}) => {
         return await 
         product.findOne(filter)
-        .limit(limit)
-        .skip(skip)
         .select(select)
         .lean();
     }

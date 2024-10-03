@@ -136,7 +136,7 @@ class DiscountService{
             console.log("Pass min order")
             console.log("Products:: ",products)
             totalOrder = products.reduce((acc,currentValue) =>(
-                acc+currentValue.quanity*currentValue.price
+                acc+currentValue.quantity*currentValue.price
             ),0)
             console.log(`Total Order:: ${totalOrder}`)
             if(totalOrder < discount_min_order_value)
@@ -148,12 +148,37 @@ class DiscountService{
                  throw new BadRequestError('This discount code has been used by maximum users')
         }
         const amount = discount_type === 'mixed_price' ? discount_value : totalOrder * (discount_value/100);
-        console.log("Discount Value:: ",discount_value)
         return {
             totalOrder,
             discount:amount,
             totalPrice: totalOrder - amount
         }
+    }
+    static totalAmountDiscount = async ({userId,shopId,discounts=[],products=[]}) => {
+        console.log("Discount:: ",discounts)
+        console.log("Products:: ",products)
+        const discountAmount = await Promise.all(discounts.map( async d => {
+            const discountFound = await DiscountRepository.checkDiscountExist({
+                _id:d.discountId,
+                discount_code:d.discountCode,
+                discount_shopId:d.discountShopId
+            });
+            if(!discountFound) throw new BadRequestError('Discount does not exist');
+            const {discount,totalPrice}  =  await this.getDiscountAmount({code:discountFound.discount_code,
+                userId,shopId,products
+            })
+            console.log("abcdaskdaksd")
+            return {
+                discount,totalPrice
+            }
+        }))
+        console.log("**DiscountAmount:: ",discountAmount)
+        const result = discountAmount.reduce((acc,current) => {
+            acc.discount+=current.discount,
+            acc.totalPrice+=current.totalPrice
+            return acc;
+        },{discount:0,totalPrice:0})
+        return result;
     }
     static cancelDiscountByUser = async ({userId,code,shopId}) => {
         const filter = {
