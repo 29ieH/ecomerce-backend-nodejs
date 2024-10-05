@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const { Types } = require('mongoose')
+const { default: slugify } = require('slugify')
 const getInfoData = ({fields=[],obj= {}}) => {
     return _.pick(obj,fields)
 }
@@ -37,6 +38,17 @@ const updateNestedObjectParser = obj => {
     })
     return final;
 }
+const equalsArrayAll = (arrDefault,arr) => {
+    const valid = arr.map((val) => {
+        if(!arrDefault.includes(val)) return false;
+    })
+    return !valid.includes(false);
+}
+const toArraySlugify = arr => {
+    return arr.map((val) => {
+        return slugify(val.toUpperCase())
+    })
+}
 const convertToObjectIdMongo = id => new Types.ObjectId(id);
 module.exports = {
     getInfoData,
@@ -44,5 +56,7 @@ module.exports = {
     unlSelect,
     removeUndefiedObject,
     updateNestedObjectParser,
-    convertToObjectIdMongo
+    convertToObjectIdMongo,
+    equalsArrayAll,
+    toArraySlugify
 }

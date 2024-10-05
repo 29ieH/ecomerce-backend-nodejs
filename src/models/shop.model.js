@@ -1,4 +1,5 @@
 const {mongoose, Types , Schema, Collection } = require('mongoose'); // Erase if already required
+const { USER_DOCUMENT } = require('../constant/document.const');
 
 const DOCUMENT_NAME = "Shop";
 const COLLECTION_NAME = "Shops";    
@@ -26,9 +27,10 @@ var shopSchema = new mongoose.Schema({
         type:Schema.Types.Boolean,
         default:false
     },
-    roles:{
-        type:Array,
-        default:[]
+    user:{
+        type:Types.ObjectId,
+        ref:USER_DOCUMENT,
+        required:true
     }
 },{
     timestamps:true,

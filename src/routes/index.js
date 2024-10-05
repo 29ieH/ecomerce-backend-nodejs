@@ -6,7 +6,11 @@ const ver = '/api/v1';
 // Check api-key
 router.use(validApiKey)
 router.use(checkPermission('0000'))
+
 router.use(`${ver}/product`,require('./product'))
+router.use(`${ver}/user`,require('./user'))
+router.use(`${ver}/permission`,require('./permission'))
+router.use(`${ver}/role`,require('./role'))
 router.use(`${ver}/checkout`,require('./checkout'))
 router.use(`${ver}/cart`,require('./cart'))
 router.use(`${ver}/shop`,require('./access'))

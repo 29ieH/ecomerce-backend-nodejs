@@ -11,6 +11,12 @@ const document_db = {
     DISCOUNT_DOCUMENT : 'Discount',
     DISCOUNT_COLLECTION: 'Discounts',
     CART_DOCUMENT:'Cart',
-    CART_COLLECTION:'Carts'
+    CART_COLLECTION:'Carts',
+    ROLE_DOCUMENT:'Role',
+    ROLE_COLLECTION:'Roles',
+    PERMISSION_DOCUMENT:'Permission',
+    PERMISSION_COLLECTION:'Permissions',
+    USER_DOCUMENT:'User',
+    USER_COLLECTION:'Users'
 }
 module.exports = document_db;
