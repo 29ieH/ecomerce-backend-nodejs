@@ -1,3 +1,4 @@
+const { check } = require('express-validator')
 const _ = require('lodash')
 const { Types } = require('mongoose')
 const { default: slugify } = require('slugify')
@@ -49,6 +50,43 @@ const toArraySlugify = arr => {
         return slugify(val.toUpperCase())
     })
 }
+const parseErrorValidator = arrr => {
+        if(!Array.isArray(arrr)) return null;
+        return arrr.map(val => {
+            return {
+                field:val.path,
+                msg:val.msg
+            }
+        })
+}
+/*
+[
+    {'filed',
+    ,validation,
+    optional
+    'message'},
+     {'filed',
+     validation,
+    'message'},
+     {'filed',
+     validation,
+    'message'}
+]
+*/
+const validatorObjectRequest = async (req, arr) => {
+    return await Promise.all(arr.map(val => {
+        console.log("Val:: ",val)
+        let validator = check(val.field); // Kiểm tra tham số đúng
+        if (val.optional ? val.optional : false) {
+            validator = validator.optional();
+        }
+        if (val.validation) {
+            validator = validator[val.validation.rule](...val.validation.args).withMessage(val.message);
+        }
+        console.log("Pass:: ")
+        return validator.run(req); // Chạy validator   
+    }));
+};
 const convertToObjectIdMongo = id => new Types.ObjectId(id);
 module.exports = {
     getInfoData,
@@ -58,5 +96,7 @@ module.exports = {
     updateNestedObjectParser,
     convertToObjectIdMongo,
     equalsArrayAll,
-    toArraySlugify
+    toArraySlugify,
+    validatorObjectRequest,
+    parseErrorValidator
 }

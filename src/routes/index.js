@@ -13,7 +13,7 @@ router.use(`${ver}/permission`,require('./permission'))
 router.use(`${ver}/role`,require('./role'))
 router.use(`${ver}/checkout`,require('./checkout'))
 router.use(`${ver}/cart`,require('./cart'))
-router.use(`${ver}/shop`,require('./access'))
+router.use(`${ver}/access`,require('./access'))
 router.use(`${ver}/discount`,require('./discount.js'))
 
 // router.get('/',(req,res,next) => {

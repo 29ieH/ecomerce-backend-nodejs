@@ -9,6 +9,10 @@ const existEmail = async ({email,select = {
 }}) => {
     return await shopModel.findOne({email}).select(select).lean();
 }
+const checkExisShop= async ({filter}) => {
+    return await shopModel.findOne(filter).lean();
+}
 module.exports = {
-    existEmail
+    existEmail,
+    checkExisShop
 }

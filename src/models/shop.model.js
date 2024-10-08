@@ -14,9 +14,13 @@ var shopSchema = new mongoose.Schema({
         required:true,
         trim:true
     },
-    password:{
-        type:String,
-        required:true,
+    // password:{
+    //     type:String,
+    //     required:true,
+    // },
+    address:{
+        type:Object,
+        default:{}  
     },
     status:{
         type:String,

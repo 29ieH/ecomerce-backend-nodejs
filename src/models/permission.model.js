@@ -18,15 +18,15 @@ var permissionSchema = new Schema({
     collection:PERMISSION_COLLECTION,
     timestamps:true
 });
-permissionSchema.pre('save',function (next){
-    if(this.name){
-        this.name = slugify(this.name.toUpperCase())
-        console.log(this.name)
-        if(!enumsDocument.PERMISSION.includes(this.name)){
-           return next(new BadRequestError('Permission name is not valid'))
-        }
-    }
-    next();
-})
+// permissionSchema.pre('save',function (next){
+//     if(this.name){
+//         this.name = slugify(this.name.toUpperCase())
+//         console.log(this.name)
+//         if(!enumsDocument.PERMISSION.includes(this.name)){
+//            return next(new BadRequestError('Permission name is not valid'))
+//         }
+//     }
+//     next();
+// })
 //Export the model
 module.exports = model(PERMISSION_DOCUMENT, permissionSchema);

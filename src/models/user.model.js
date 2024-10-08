@@ -27,7 +27,7 @@ var userSchemal = new Schema({
         enums:['active','inactive','banned'],
         default:'active'
     },
-    role:{
+    roles:{
         type:Array,
         default:['USER']
     }

@@ -13,7 +13,7 @@ class RoleService{
         const foundRole = await RoleRepository.checkExistRole({
             filter
         })
-        if(foundRole) throw new BadRequestError('Role is exist')
+        if(foundRole) throw new BadRequestError({message:'Role is exist'})
         return await RoleRepository.createRole({
             name,description,permissions
         })

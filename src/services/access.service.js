@@ -9,6 +9,7 @@ const {getInfoData} = require("../utils/index")
 const {ConflicRequestError,BadRequestError,AuthenFailError} = require('../core/error.response');
 const { existEmail } = require("./shop.service");
 const { JWTverify } = require("../helpers/jwt.core");
+const UserRepository = require("../models/repositories/user.repository");
 const RoleShop = {
     SHOP:'SHOP',
     WRITER:'WRITER',
@@ -36,7 +37,7 @@ class AccessService{
             },
             $addToSet:{
                 refreshTokenUsed:refreshToken
-            }
+            } 
         })
         const keys = {
             accessToken:tokens.accessToken,
@@ -50,12 +51,14 @@ class AccessService{
             }
         }
     }
-    static logout = async(keyStore) => {
-        const keyDelete = await KeyTokenService.removeByID({keyId:keyStore._id});
+    static logout = async(userId) => {
+        const foundToken = await KeyTokenService.findByUserId({user:userId})
+        if(!foundToken) throw new BadRequestError('Forbiden Error')
+        const keyDeleted = await KeyTokenService.removeByUserID({ userId:foundToken.user});
         return {
             code:200,
             data:{
-                key:keyDelete
+                key:keyDeleted
             }
         }
     }
@@ -64,47 +67,49 @@ class AccessService{
     // Create token
     // Return data
     static login = async ({email,password,refreshToken = null}) => {
-        const shopFound = await existEmail({email});
-        if(!shopFound) throw new ConflicRequestError('Shop is not registed')
-        const match = bcrypt.compareSync(password,shopFound.password);
+        const userFound = await UserRepository.checkExistEmail(email);
+        if(!userFound) throw new ConflicRequestError('User is not registed')
+        const match = bcrypt.compareSync(password,userFound.password);
         if(!match) throw new AuthenFailError('Password is not correct')
         const privateKey = crypt.randomBytes(64).toString('hex')
         const publicKey = crypt.randomBytes(64).toString('hex')
         const tokens = await createToken({
-            userId:shopFound._id,
-            email:shopFound.email
+            userId:userFound._id,
+            email:userFound.email
         },privateKey,publicKey)
         await KeyTokenService.createPublicKey({
-            userId:shopFound._id,
+            userId:userFound._id,
             privateKey,publicKey,
             refreshToken:tokens.refreshToken
         })
         return {
             code:201,
             data:{
-                shop:getInfoData({fields:['_id','name','email'],obj:shopFound}),
+                user:getInfoData({fields:['_id','name','email'],obj:userFound}),
                 tokens
             }
         }
     }
-    static signUp = async ({name,email,password,roles}) => {
+    static signUp = async ({name,email,password,address,roles}) => {
         // try {
                    // Check exits email 
-        const exitsEmail = await shopModel.findOne({email}).lean();
+        const exitsEmail = await UserRepository.checkExistEmail(email);
             if(exitsEmail){
                 // return {
                 //     code:'xxx',
                 //     message:'Shop already registered!'
                 // }
-                throw new BadRequestError('Error: Shop already registered!')
+                throw new BadRequestError({message:'Email is already registed!'})
             }
             const passwordHash = await bcrypt.hash(password,10);
-            const roleCreated = roles ?? [RoleShop.SHOP];
-            console.log(`Roles:: ${roleCreated}`)
-            const newShop = await shopModel.create({
-                name,email,password:passwordHash,roles:roleCreated
+            const newUser = await UserRepository.createUser({
+                name,
+                email,
+                password:passwordHash,
+                address,
+                roles
             })
-            if(newShop){
+            if(newUser){
                 // create private key, public key - rsa (thuat toan bat doi xung)
                 // const {privateKey,publicKey} = crypt.generateKeyPairSync('rsa',{
                 //     modulusLength:4096,
@@ -121,11 +126,11 @@ class AccessService{
                 const privateKey = crypt.randomBytes(64).toString('hex')
                 const publicKey = crypt.randomBytes(64).toString('hex')
                 const tokens = await createToken({
-                    userId:newShop._id,
-                    email:newShop.email
+                    userId:newUser._id,
+                    email:newUser.email
                 },privateKey,publicKey)
                 const {privateKeyStore,publicKeyStore} = await KeyTokenService.createPublicKey(              
-                    {userId:newShop._id,publicKey,privateKey,refreshToken:tokens.refreshToken}
+                    {userId:newUser._id,publicKey,privateKey,refreshToken:tokens.refreshToken}
                 );
                 console.log(`Private: ${privateKeyStore}, Public: ${publicKeyStore}`)
                 if(!privateKeyStore||!publicKeyStore){
@@ -138,7 +143,7 @@ class AccessService{
                 return {
                     code:201,
                     data:{
-                        shop:getInfoData({fields:['_id','name','email'],obj:newShop}),
+                        user:getInfoData({fields:['_id','name','email'],obj:newUser}),
                         tokens
                     }
                 }

@@ -1,3 +1,4 @@
+
 const { BadRequestError } = require("../core/error.response")
 const PermissionRepository = require("../models/repositories/permission.repository")
 
@@ -9,7 +10,7 @@ class PermissionService {
             name
         }
         const foundPermission = await PermissionRepository.checkExistPermission({filter})
-        if(foundPermission) throw new BadRequestError('Permission is exist')
+        if(foundPermission) throw new BadRequestError({message:'Permission is exist'})
         return await PermissionRepository.createPermission({
             name,
             description
