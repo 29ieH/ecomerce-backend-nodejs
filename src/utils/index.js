@@ -87,6 +87,12 @@ const validatorObjectRequest = async (req, arr) => {
         return validator.run(req); // Chạy validator   
     }));
 };
+const equalsToEvery = (arrOfObject,arr) => {
+    // if(arr.length==1) return arrOfObject.includes(arr[0]);
+    return arr.every(val => {
+        return arrOfObject.includes(val);
+    })
+}
 const convertToObjectIdMongo = id => new Types.ObjectId(id);
 module.exports = {
     getInfoData,
@@ -98,5 +104,6 @@ module.exports = {
     equalsArrayAll,
     toArraySlugify,
     validatorObjectRequest,
-    parseErrorValidator
+    parseErrorValidator,
+    equalsToEvery
 }

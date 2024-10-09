@@ -2,6 +2,7 @@ const { BadRequestError } = require("../core/error.response")
 const CartRepository = require("../models/repositories/cart.repository")
 const ProductRepository = require("../models/repositories/product.repository")
 const { unlSelect, convertToObjectIdMongo } = require("../utils")
+const InventoryService = require("./inventory.service")
 const ProductFactory = require("./product.service")
 
 class CartService{
@@ -89,6 +90,13 @@ class CartService{
         if(!productFound) throw new BadRequestError('Product is not exist')
         const {quantity} = product;
         productFound = {...productFound,quantity};
+        // Check Quanity Add > Inventory ? 
+        const validQuanity = await InventoryService.validQuanityByProduct({
+            productId:productFound._id,
+            quanity
+        }) 
+        if(!validQuanity) throw new BadRequestError('Quanity is not valid')
+        // ...
         const filter = {
             cartUserId:userId,
             cartState:'active'

@@ -15,5 +15,8 @@ class UserRepository{
     static createUser = async(body) => {
         return await userModel.create(body)
     }
+    static getUserById = async (userId) => {
+        return await userModel.findById(userId).lean();
+    }
 }
 module.exports = UserRepository

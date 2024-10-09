@@ -3,6 +3,8 @@ const express = require('express');
 const ProductController = require('../../controllers/productController')
 const { authenticationV2 } = require('../../auth/authUtils');
 const { asyncHandler } = require('../../helpers/handleUtils');
+const { authPermission } = require('../../auth/authPermission');
+const enumsDocument = require('../../constant/enums.const');
 const Router = express.Router();
 // Gets not authen
 Router.get("/search",asyncHandler(ProductController.searchProductByText))
@@ -11,6 +13,8 @@ Router.get("/:product_id",asyncHandler(ProductController.getProduct))
 // Authentication
 Router.use(authenticationV2)
 // Post
+// Validate Permission
+Router.use(asyncHandler(authPermission(enumsDocument.PERMISSION[1])))
 Router.post("",asyncHandler(ProductController.createProduct))
 // PUT
 Router.put("/published/:id",asyncHandler(ProductController.publishedProduct))

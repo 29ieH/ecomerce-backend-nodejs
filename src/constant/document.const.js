@@ -17,6 +17,10 @@ const document_db = {
     PERMISSION_DOCUMENT:'Permission',
     PERMISSION_COLLECTION:'Permissions',
     USER_DOCUMENT:'User',
-    USER_COLLECTION:'Users'
+    USER_COLLECTION:'Users',
+    INVENTORY_DOCUMENT:'Inventory',
+    INVENTORY_COLLECTION:'Inventories',
+    ORDER_DOCUMENT:'Order',
+    ORDER_COLLECTION:'Orders'
 }
 module.exports = document_db;
