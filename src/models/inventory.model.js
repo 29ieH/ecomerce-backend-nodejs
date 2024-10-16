@@ -1,4 +1,4 @@
-const {model,Schema, Types} = require('mongoose'); // Erase if already required
+const {model,Schema,Types} = require('mongoose'); // Erase if already required
 const { INVENTORY_COLLECTION, PRODUCT_DOCUMENT, SHOP_DOCUMENT, INVENTORY_DOCUMENT } = require('../constant/document.const');
 
 // Declare the Schema of the Mongo model
@@ -13,7 +13,7 @@ var inventorySchema = new Schema({
         required:true
     },
     address:{
-        type:Object,
+        type:Schema.Types.Mixed,
         default:{}
     },
     shopId:{

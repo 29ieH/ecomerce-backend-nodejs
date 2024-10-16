@@ -26,6 +26,7 @@ class AuthenFailError extends AppError{
 module.exports = {
     ConflicRequestError,
     BadRequestError,
-    AuthenFailError
+    AuthenFailError,
+    AppError
 }
 

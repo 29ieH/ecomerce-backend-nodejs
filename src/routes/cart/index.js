@@ -9,6 +9,7 @@ const Router = express.Router();
 Router.use(authenticationV2)
 // GET
 Router.get("/product",asyncHandler(CartController.getListToCart))
+Router.get("/me",asyncHandler(CartController.getMyCart))
 // Post
 Router.post("/product",asyncHandler(CartController.createProductToCart))
 // PATCH

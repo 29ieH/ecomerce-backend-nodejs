@@ -1,7 +1,8 @@
 const { BadRequestError } = require("../core/error.response")
 const { product,clothing,electronic } = require("../models/product.model")
 const {onGetSelect,unlSelect,removeUndefiedObject,updateNestedObjectParser} = require("../utils/index")
-const ProductRepository = require('../models/repositories/product.repository')
+const ProductRepository = require('../models/repositories/product.repository');
+const { startSession } = require("mongoose");
 class ProductFactory{
     static regis = {};
     static registedClass = (type,classRef) => {
@@ -19,8 +20,22 @@ class ProductFactory{
         if(!regisSelected) throw new BadRequestError('Error Type Product!, pls check')
         return new regisSelected(payload).updateProduct({productId});
     }
-
-
+    static updateQuanityProduct = async({productId,quantity},session) => {
+        console.log("Session Update Quanity:: ",session)
+        console.log("Call update Quantity")
+        console.log({productId,quantity})
+        const filter = {
+            _id:productId,
+        },body = {
+            $inc:{
+                product_quantity:quantity
+            }
+        },options = {
+            new:true,
+            session
+        }
+        return await ProductRepository.updateQuanity(filter,body,options);
+    }
     static getAllProductDrafts = async({product_shop,limit=50,skip=0}) => {
         const query = {product_shop,isDrafts:true};
         return await ProductRepository.getAllProductDraftsByShop({query,limit,skip});
@@ -88,7 +103,7 @@ class ProductFactory{
                     productId:p.productId
                 }
             }else{
-                throw new BadRequestError('Order wrong !!!')
+                throw new BadRequestError({message:'Order wrong !!!'})
             }
         }))
     }
@@ -97,13 +112,12 @@ class ProductFactory{
 class Product{
     constructor({
         product_name,product_thumb,product_description,product_price,
-        product_quantity,product_type,product_shop,product_attributes
+        product_type,product_shop,product_attributes
     }){
         this.product_name = product_name,
         this.product_thumb = product_thumb,
         this.product_description = product_description,
         this.product_price = product_price,
-        this.product_quantity = product_quantity,
         this.product_type = product_type,
         this.product_shop = product_shop,
         this.product_attributes = product_attributes
@@ -122,15 +136,24 @@ class Product{
 
 class Clothing extends Product{
     saveProduct = async () => {
-        const newClothing = await clothing.create({...this.product_attributes,product_shop:this.product_shop});
-        if(!newClothing) throw new  BadRequestError('Wrong something, pls re-create!1')
-        const product = await super.saveProduct(newClothing._id);
-        if(!product) throw new BadRequestError('Wrong something, pls re-create! 2')
-        return {
-            code:201,
-            data:{
-                product
+        const session = await startSession();
+        try{
+            session.startTransaction();
+            const newClothing = await clothing.create({...this.product_attributes,product_shop:this.product_shop});
+            if(!newClothing) throw new  BadRequestError('Wrong something, pls re-create!1')
+            const product = await super.saveProduct(newClothing._id);
+            if(!product) throw new BadRequestError('Wrong something, pls re-create! 2')
+            await session.commitTransaction();
+            return {
+                code:201,
+                data:{
+                    product
+                }
             }
+        }catch(e){
+            if(session) await session.abortTransaction();
+        }finally{
+            session.endSession();
         }
     } 
     updateProduct = async ({productId}) => {
@@ -157,15 +180,24 @@ class Clothing extends Product{
 }
 class Electronic extends Product{
     saveProduct = async () => {
+        const session = await startSession();
+        try{
+            session.startTransaction();
         const newElectronic= await electronic.create({...this.product_attributes,product_shop:this.product_shop});
         if(!newElectronic) throw BadRequestError('Wrong something, pls re-create! 1')
         const product = await super.saveProduct(newElectronic._id);
         if(!product) throw new BadRequestError('Wrong something, pls re-create! 2')
+        await session.commitTransaction();
         return {
             code:201,
             data:{
                 product
             }
+        } 
+        }catch(e){
+            if(session) await session.abortTransaction();
+        }finally{
+            session.endSession();
         }
     } 
     updateProduct = async ({productId}) => {

@@ -119,7 +119,7 @@ class DiscountService{
             discount_shopId:convertToObjectIdMongo(shopId)
         }
         const discountFound = await DiscountRepository.checkDiscountExist({filter});
-        if(!discountFound) throw new BadRequestError('Discount is not exist !!!');
+        if(!discountFound) throw new BadRequestError({message:'Discount is not exist !!!'});
         const {
             discount_is_active,
             discount_max_uses,
@@ -129,8 +129,8 @@ class DiscountService{
             discount_type,
             discount_value
         } = discountFound
-        if(!discount_is_active) throw new BadRequestError('Discount is expired')
-        if(!discount_max_uses) throw new BadRequestError('Discount are out')
+        if(!discount_is_active) throw new BadRequestError({message:'Discount is expired'})
+        if(!discount_max_uses) throw new BadRequestError({message:'Discount are out'})
         let totalOrder = 0;
         if(discount_min_order_value>0) {
             console.log("Pass min order")
@@ -140,12 +140,12 @@ class DiscountService{
             ),0)
             console.log(`Total Order:: ${totalOrder}`)
             if(totalOrder < discount_min_order_value)
-                 throw new BadRequestError(`Discount requires a minium order value of ${discount_min_order_value}`)
+                 throw new BadRequestError({message:`Discount requires a minium order value of ${discount_min_order_value}`})
         }
         if(discount_max_user_uses>0){
             const userUsedDiscount = discount_user_used.filter(user => user.userId === userId).length;
             if(userUsedDiscount>=discount_max_user_uses) 
-                 throw new BadRequestError('This discount code has been used by maximum users')
+                 throw new BadRequestError({message:'This discount code has been used by maximum users'})
         }
         const amount = discount_type === 'mixed_price' ? discount_value : totalOrder * (discount_value/100);
         return {
@@ -208,11 +208,11 @@ class DiscountService{
         const discountFound = await DiscountRepository.checkDiscountExist({
             filter
         })
-        if(!discountFound) throw new BadRequestError('Discount are not exist')
+        if(!discountFound) throw new BadRequestError({message:'Discount are not exist'})
         const {
             discount_applies_to,discount_is_active
         } = discountFound
-        if(!discount_is_active) throw new BadRequestError('Discount has expired ')
+        if(!discount_is_active) throw new BadRequestError({message:'Discount has expired'})
         let products
     // Get all products by shop - Discount apply all product
         if(discount_applies_to==='all'){

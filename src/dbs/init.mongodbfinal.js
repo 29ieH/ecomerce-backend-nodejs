@@ -11,7 +11,7 @@ class Database{
             mongoose.set('debug',true);
             mongoose.set('debug',{color:true});
         }
-        mongoose.connect(connectString).then(_ => console.log('Connect Mongodb Pro'))
+        mongoose.connect("mongodb://localhost:27018,localhost:27019,localhost:27020/shopDev?replicaSet=nieh").then(_ => console.log('Connect Mongodb Pro'))
         .catch(err => console.log(`Error:: ${err}`))
     }
     static getInstance(){

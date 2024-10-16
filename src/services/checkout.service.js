@@ -48,7 +48,7 @@ class CheckoutService{
             cartState:'active',
             cartUserId:userId
         });
-        if(!foundCart) throw new BadRequestError('Cart does not exist')
+        if(!foundCart) throw new BadRequestError({message:'Cart does not exist'})
         const checkoutOrder = {
             totalPrice:0, // Tổng tiền hàng
             feeShip:0, // Phí ship
@@ -59,9 +59,9 @@ class CheckoutService{
             const {shopId,discountShop=[],itemsOrder = []} = shopOrderIds[index];
             const checkProductServer = await ProductFactory.checkProductByServer(itemsOrder);
             console.log("Check Product Server[1]:: ",checkProductServer)
-            if(!checkProductServer[0]) throw new BadRequestError('Order wrong !!')
+            if(!checkProductServer[0]) throw new BadRequestError({message:'Order wrong !!'})
             if (!checkProductServer || checkProductServer.some(product => !product || !product.price)) {
-                    throw new BadRequestError('Product information invalid or not found!');
+                    throw new BadRequestError({message:'Product information invalid or not found!'});
             }
             const checkoutPrice = checkProductServer.reduce((acc, currentValue) => {
                 return acc + (currentValue.quantity * currentValue.price); // Kiểm tra giá và số lượng có tồn tại
@@ -95,5 +95,17 @@ class CheckoutService{
             checkoutOrder
         }
     }
+    /* 
+        cartId:1213,
+        userId:!23,
+        shopOrderIds = [
+        "   {
+                shopId:"123",
+                items:[{productId:"123"}],
+                discount:[]
+            }"
+        ]
+    
+    */
 }
 module.exports = CheckoutService

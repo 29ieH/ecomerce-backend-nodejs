@@ -9,12 +9,12 @@ var orderSchema = new Schema({
         required:true
     },
     orderItems:{
-        types:Array,
+        type:Array,
         required:true,
         default:[]
     },
     totalOrder:{
-        types:Object,
+        type:Object,
         required:true,
         default:{}
     },

@@ -1,5 +1,8 @@
+const { startSession } = require("mongoose")
 const { BadRequestError } = require("../core/error.response")
 const OrderRepository = require("../models/repositories/order.repository")
+const { reduckStockByOrder } = require("./inventory.service")
+const { handleErros } = require("../utils")
 
 class OrderService {    
     /*
@@ -14,18 +17,27 @@ class OrderService {
         address,
         note
     }) => {
-        const order =  await OrderRepository.createOrder({
-            userId,
-            orderItems,
-            totalOrder,
-            paymentMethods,
-            address,
-            note
-        })
-        if(!order) throw new BadRequestError('Order is Error, pls try again')
-        /* 
-            Update quanity Inventory ... 
-        */
+        const session = await startSession();
+        try {
+            session.startTransaction();
+            const order =  await OrderRepository.createOrder({
+                userId,
+                orderItems,
+                totalOrder,
+                paymentMethods,
+                address,
+                note
+            },session)
+            if(order) await reduckStockByOrder(orderItems,session);
+            await session.commitTransaction();
+            return order;
+        } catch (error) {
+            await session.abortTransaction();
+            throw handleErros(error);
+            // throw new BadRequestError({message:'Order is Error, pls try again'})
+        } finally{
+            await session.endSession();
+        }
     }
 }
 module.exports = OrderService

@@ -82,6 +82,7 @@ class CartService{
     }
 
     static addProductCart = async ({userId,product}) => {
+        console.log("Product:: ",product)
         // Get info product  
         let productFound = await ProductFactory.getProductOptionsField({
             product_id : product.productId,
@@ -91,11 +92,11 @@ class CartService{
         const {quantity} = product;
         productFound = {...productFound,quantity};
         // Check Quanity Add > Inventory ? 
-        const validQuanity = await InventoryService.validQuanityByProduct({
-            productId:productFound._id,
-            quanity
-        }) 
-        if(!validQuanity) throw new BadRequestError('Quanity is not valid')
+        // const validQuanity = await InventoryService.validQuanityByProduct({
+        //     productId:productFound._id,
+        //     quantity
+        // }) 
+        // if(!validQuanity) throw new BadRequestError({message:'Quanity is not valid'})
         // ...
         const filter = {
             cartUserId:userId,
@@ -152,31 +153,18 @@ class CartService{
         const productIncart = foundCart?.cartProducts?.find(p => String(p._id) === String(productId));
         if(!productIncart)  throw new BadRequestError('Something happen Error, pls re-start')
         console.log("Product in cart:: ",productIncart)
-        // const query = {
-        //     cartUserId:foundCart.cartUserId,
-        //     cartState:'active'
-        // },
-        // body = {
-        //     $pull:{
-        //         cartProducts:{
-        //             _id:convertToObjectIdMongo(productId)
-        //         }
-        //     },
-        //     $inc:{
-        //      cartCountProduct:-productIncart.quantity    
-        //     }
-        // },
-        // options = {
-        //     new:true
-        // }
-        // return await CartRepository.deleteCartItem({
-        //     filter:query,
-        //     body,
-        //     options
-        // })
         foundCart.cartProducts = foundCart?.cartProducts.filter(p => p != productIncart)
         foundCart.cartCountProduct = foundCart?.cartCountProduct - productIncart.quantity;
         return await foundCart.save();
+    }
+    static getMyCart = async (userId) => {
+        const foundCart = await CartRepository.checkExistCart({
+            filter:{
+                cartUserId:userId,
+                cartState:'active'
+            }
+        });
+        return foundCart;
     }
     /*
     Update cart

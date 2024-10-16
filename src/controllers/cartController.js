@@ -2,10 +2,15 @@ const { OK } = require('../core/success.response');
 const CartService = require('../services/cart.service');
 class CartController{
     static createProductToCart  = async (req,res,next) => {   
+        const {userId} = req.user;
         new OK({
-            metaData: await CartService.addProductCart({
-               ...req.body
-            })
+            metaData: await CartService.addProductCart({userId,...req.body})
+        }).send(res)
+    }
+    static getMyCart  = async (req,res,next) => {   
+        const {userId} = req.user;
+        new OK({
+            metaData: await CartService.getMyCart(userId)
         }).send(res)
     }
     static getListToCart  = async (req,res,next) => {   

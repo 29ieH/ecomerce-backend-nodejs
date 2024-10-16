@@ -7,7 +7,7 @@ const productSchema = new Schema({
     product_description: String,
     product_slug:String,
     product_price:{type:Number,required:true},
-    product_quantity:{type:Number,required:true},
+    product_quantity:{type:Number,required:true,default:0},
     product_type:{type:String,required:true,enum:['electronics','clothing','furniture']},
     product_shop:{type:Schema.Types.ObjectId,ref:'Shop'},
     product_attributes:{type:Schema.Types.Mixed,required:true},

@@ -2,39 +2,39 @@ const { OK } = require('../core/success.response');
 const ProductService = require('../services/product.service')
 class ProductController{
     static createProduct  = async (req,res,next) => {   
-        const {userId} = req.user;
+        const {shopId} = req.shop;
         new OK({
             metaData: await ProductService.createProduct({
                 type:req.body.product_type,
                 payload:{
                     ...req.body,
-                    product_shop:userId
+                    product_shop:shopId
                 }
             })
         }).send(res)
     }
     static getAllDrafts = async (req,res,next) => {
-        const {userId} = req.user;
+        const {shopId} = req.shop;
         new OK({
             metaData: await ProductService.getAllProductDrafts({
-                product_shop:userId
+                product_shop:shopId
             })
         }).send(res)
     }
     static getAllPublished = async (req,res,next) => {
-        const {userId} = req.user;
+        const {shopId} = req.shop;
         new OK({
             metaData: await ProductService.getAllProductPublished({
-                product_shop:userId
+                product_shop:shopId
             })
         }).send(res)
     }
     static publishedProduct = async (req,res,next) => {
-        const {userId } = req.user;
+        const {shopId} = req.shop;
         const {id} = req.params;
         new OK({
             metaData: await ProductService.publishedProduct({
-                product_shop:userId,id
+                product_shop:shopId,id
             })
         }).send(res)
     }

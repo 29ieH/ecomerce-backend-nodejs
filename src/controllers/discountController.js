@@ -2,21 +2,21 @@ const {OK} = require('../core/success.response')
 const DiscountService = require('../services/discount.service')
 class DiscountController{
     static generateByShop = async (req,res,next) => {
-        const {userId} = req.user; 
+        const {shopId} = req.shop; 
         new OK({
             message:'Discount created',
             metaData: await DiscountService.generateDiscountByShop({
-                ...req.body,shopId:userId
+                ...req.body,shopId
             })
         }).send(res)
     }
     static updateBySop = async (req,res,next) => {
-        const {userId} = req.user; 
+        const {shopId} = req.shop; 
         const {discountId} = req.params;
         new OK({
             message:'Discount created',
             metaData: await DiscountService.updateDiscountByShop({
-                shopId:userId,
+                shopId,
                 discountId,
                 body:req.body
             })
@@ -43,11 +43,11 @@ class DiscountController{
     }
     static deleteDiscountByCode = async (req,res,next) => {
         const {discountId} = req.params;
-        const {userId} = req.user;
+        const {shopId} = req.shop; 
         new OK({
             message:`Delete discount successful`,
             metaData:await DiscountService.deleteDiscountByCode({
-                shopId:userId,
+                shopId,
                 discountId
             })
         }).send(res)

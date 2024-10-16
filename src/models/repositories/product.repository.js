@@ -2,7 +2,11 @@ const { filter } = require('lodash');
 const { BadRequestError } = require('../../core/error.response');
 const {product} = require('../product.model');
 const { convertToObjectIdMongo } = require('../../utils');
+const { findOneAndUpdate } = require('../order.model');
 class ProductRepository{
+    static checkExistProduct = async (filter) => {
+        return await product.findOne(filter).lean();
+    }
     static getAllProductDraftsByShop = async ({query,limit,skip}) => {
         return await ProductRepository.getProductQuery({query,limit,skip});
     }
@@ -99,6 +103,9 @@ class ProductRepository{
         })
         console.log("Products:: ",products.length === productIds.length)
         return products.length === productIds.length
+    }
+    static updateQuanity= async (filter,body,options) => {
+        return await product.findOneAndUpdate(filter,body,options)
     }
 }
 module.exports = ProductRepository

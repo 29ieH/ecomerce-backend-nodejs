@@ -2,6 +2,7 @@ const { check } = require('express-validator')
 const _ = require('lodash')
 const { Types } = require('mongoose')
 const { default: slugify } = require('slugify')
+const { AppError } = require('../core/error.response')
 const getInfoData = ({fields=[],obj= {}}) => {
     return _.pick(obj,fields)
 }
@@ -88,10 +89,27 @@ const validatorObjectRequest = async (req, arr) => {
     }));
 };
 const equalsToEvery = (arrOfObject,arr) => {
-    // if(arr.length==1) return arrOfObject.includes(arr[0]);
+    if(arr.length==1) return arrOfObject.includes(arr[0]);
     return arr.every(val => {
         return arrOfObject.includes(val);
     })
+}
+const equalsToSome = (arrOfObject,arr) => {
+    console.log("arr")
+    if(arr.length==1) return arrOfObject.includes(arr[0]);
+    return arr.some(val => {
+        return arrOfObject.includes(val);
+    })
+}
+const toArrayForObject = obj => {
+    if (Array.isArray(obj)) return obj;
+    return JSON.parse(obj); 
+}
+const handleErros = error => {
+    if(error instanceof AppError){
+        console.log("Error:: ",error)
+        return error
+    }
 }
 const convertToObjectIdMongo = id => new Types.ObjectId(id);
 module.exports = {
@@ -105,5 +123,8 @@ module.exports = {
     toArraySlugify,
     validatorObjectRequest,
     parseErrorValidator,
-    equalsToEvery
+    equalsToEvery,
+    equalsToSome,
+    toArrayForObject,
+    handleErros
 }
