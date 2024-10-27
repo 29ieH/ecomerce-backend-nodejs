@@ -91,6 +91,7 @@ class AccessService{
         }
     }
     static signUp = async ({name,email,password,address,roles}) => {
+        console.log("Call Sigup")
         // try {
                    // Check exits email 
         const exitsEmail = await UserRepository.checkExistEmail(email);

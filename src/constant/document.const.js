@@ -21,6 +21,8 @@ const document_db = {
     INVENTORY_DOCUMENT:'Inventory',
     INVENTORY_COLLECTION:'Inventories',
     ORDER_DOCUMENT:'Order',
-    ORDER_COLLECTION:'Orders'
+    ORDER_COLLECTION:'Orders',
+    COMMENT_DOCUMENT:'Comment',
+    COMMENT_COLLECTION:'Comments'
 }
 module.exports = document_db;

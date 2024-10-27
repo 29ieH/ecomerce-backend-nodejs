@@ -34,7 +34,7 @@ class InventoryService {
             const updateQuantity = await ProductFactory.updateQuanityProduct({productId,quantity:-quantity},session)
             return reduceStock;
         }catch(e){
-            throw new BadRequestError('Error something, pls trying again')
+            throw e;
         }
     }
     /*
@@ -50,7 +50,7 @@ class InventoryService {
                     }))
                 }))
             } catch (error) {
-                throw new BadRequestError('Error something, pls trying again')
+                throw error
             }
     }
     static incrementStockByShop = async({productId,shopId,quantity},session) => {

@@ -2,7 +2,9 @@ const { HEADER } = require("../constant/http.const");
 const { checkExistKey } = require("../services/apikey.service");
 
 const validApiKey = async (req,res,next) => {
+    console.log("Headers:: ",req.headers)
     const key = req.headers[HEADER.API_KEY]?.toString();
+    console.log("Key:: ",key)
     if(!key){
         return res.status(403).json({
             message:'Forbiden error'

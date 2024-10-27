@@ -33,8 +33,7 @@ class OrderService {
             return order;
         } catch (error) {
             await session.abortTransaction();
-            throw handleErros(error);
-            // throw new BadRequestError({message:'Order is Error, pls try again'})
+            throw new BadRequestError({message:error.message || 'Order is Error, pls try again'})
         } finally{
             await session.endSession();
         }

@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: Swagger Ecommerce Service - OpenAPI 3.0
+  description: |-
+    This is swagger *Ecommerce*
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: thaihien29403@gmail.com  
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:3052/api/v1
+tags:
+  - name: access
+    description: Everything about your access
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: user
+    description: Operations about user
+paths:
+  /access/signup:
+    post:
+      tags:
+        - access
+      summary: Sigup account
+      description: Sigup account by guest
+      operationId: signup
+      requestBody:
+        description: Signup
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/access-signup' 
+        required: true
+      responses:
+        '200':
+          description: Signup success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-res'
+        '403':
+          description: User is exist
+  /access/login:
+    post:
+      tags:
+        - access
+      summary: Login
+      description: Login
+      operationId: login
+      requestBody:
+        description: Login
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/access-login' 
+        required: true
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-res'
+        '403':
+          description: User is not exist
+  /access/logout:
+    post:
+      tags:
+        - access
+      summary: Logout
+      security:
+        - ApiKeyAuth: []
+        - JWTAuth: []
+        - ClientIdRq: []
+      description: Logout
+      operationId: Logout
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-logout'
+        '403':
+          description: User is not exist
+      
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+    JWTAuth:
+      type: apiKey
+      in: header
+      name: authorization
+    ClientIdRq:
+      type: apiKey
+      in: header
+      name: x-client-id
+  schemas:
+    access-signup:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "nieh29"
+        email:
+          type: string
+          example: "nn0135@gmail.com"
+        password:
+          type: string
+          example: "123abc"
+    access-login:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "nn0135@gmail.com"
+        password:
+          type: string
+          example: "123abc"
+    access-res:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Success"
+        statusCode:
+          type: integer
+          example: 200
+        metaData:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 201
+            data:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "670537255fd3d60f94abedc3"
+                    name:
+                      type: string
+                      example: "nn123"
+                    email:
+                      type: string
+                      example: "nn0135@gmail.com"
+                tokens:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    refreshToken:
+                      type: string
+                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    access-logout:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 200
+        acknowledged:
+          type: boolean
+          example: true
+        deletedCount:
+          type: integer
+          example: 1      
+security:
+  - ApiKeyAuth: []

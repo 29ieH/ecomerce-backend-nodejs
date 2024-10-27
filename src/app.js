@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const compression = require('compression');
+const cors = require('cors')
 const app = express();
 // Init middlewares
 app.use(morgan("dev"))
@@ -16,6 +17,12 @@ app.use(express.urlencoded({
 require('./dbs/init.mongodbfinal')
 const { countConnect } = require('./helpers/check.connect')
 countConnect();
+// Init cors
+app.use(cors({
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Các phương thức được phép
+    allowedHeaders: ['Content-Type', 'authorization','x-api-key','x-client-id'], // Các headers được phép
+    credentials: true // Cho phép gửi cookies
+  }));
 // Init routes
 app.use('/',require('./routes/index'))
 // Handling Error
