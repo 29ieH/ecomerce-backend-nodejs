@@ -2,35 +2,56 @@ const { BadRequestError } = require("../core/error.response");
 const CommentRepository = require("../models/repositories/comment.repository");
 const { convertToObjectIdMongo } = require("../utils");
 
-class CommentService{
-    static addComment  = async({
-        userId,productId,content
-    }) => {
-        return await CommentRepository.createComment({
-            userId,productId,content
+class CommentService {
+  static createComment = async ({
+    productId,
+    userId,
+    content,
+    parentCommentId = null,
+  }) => {
+    if (parentCommentId == null) {
+      let leftValue = 1;
+      let rightValue = 2;
+      const result = await CommentRepository.createComment({
+        productId,
+        userId,
+        content,
+        leftValue,
+        rightValue,
+      });
+      return result;
+    } else {
+      let parentId = convertToObjectIdMongo(parentCommentId);
+      const parent = await CommentRepository.getComment({ parentId });
+      if (!parent) throw new BadRequestError({ message: "Comment not found" });
+      const maxRight =
+        (await CommentRepository.getMaxRighChildComment(productId)) ||
+        parent.rightValue;
+      let leftValue = maxRight;
+      let rightValue = leftValue + 1;
+      const childComment = await CommentRepository.createComment({
+        productId,
+        userId,
+        content,
+        parentId,
+        leftValue,
+        rightValue,
+      });
+      if (!childComment)
+        throw new BadRequestError({
+          message: "Something wrong!!!, pls try again",
         });
-    }
-    static addReply = async ({
-        userId,commentId,content
-    }) => {
-        console.log({userId,commentId,content})
-        const commentParent = await CommentRepository.getComment({
-            _id:commentId
+      const updateValue = await CommentRepository.updateValueComment(
+        productId,
+        childComment.leftValue,
+        childComment.rightValue
+      );
+      if (!updateValue)
+        throw new BadRequestError({
+          message: "Something Wrong!!!, pls try again",
         });
-        if(!commentParent) throw new BadRequestError({message:'Wrong something, pls trying'})
-        const reply = {
-            userId,
-            content
-        }
-        console.log("Reply:: ",reply)
-        commentParent.replies.push(
-            reply
-        )
-        return await commentParent.save();
+      return childComment;
     }
-    static getCommentByProduct = async({productId,limit,page,sort='asc'}) => {
-        const sortBy = sort == 'asc' ? {'_v':1} : {'createdAt':1};
-        return await CommentRepository.getCommentByProduct({productId:convertToObjectIdMongo(productId),limit,page,sort:sortBy})
-    }
+  };
 }
-module.exports = CommentService
+module.exports = CommentService;
